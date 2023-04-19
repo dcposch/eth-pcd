@@ -39,7 +39,7 @@ const Home: NextPage = () => {
             title="Connect your wallet to create an Ethereum PCD."
             enabled={true}
           >
-            <ConnectButton />
+            <ConnectButton showBalance={false} />
           </Instruction>
           <Instruction
             title="Login with your Zuzalu passport."

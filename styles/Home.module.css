@@ -7,7 +7,7 @@
 
 .main {
   background: #fff;
-  border-radius: 24px;
+  border-radius: 1.5rem;
   min-height: 50vh;
   padding: 2rem 0;
   flex: 1;
@@ -115,7 +115,7 @@
 
 .instructionEnabled,
 .instructionDisabled{
-  min-height: 96px;
+  min-height: 6rem;
 }
 
 .instructionList li::before {

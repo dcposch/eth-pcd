@@ -6,11 +6,16 @@ import { useState } from "react";
 import { useAccount } from "wagmi";
 import styles from "../styles/Home.module.css";
 import { ZupassLoginButton } from "../view/ZupassLoginButton";
+import { SignCommitmentButton } from "../view/SignCommitmentButton";
+import { EthereumOwnershipPCD } from "@pcd/ethereum-ownership-pcd";
+import { AddToPassportButton } from "../view/AddToPassportButton";
 
 const Home: NextPage = () => {
   const account = useAccount();
 
   const [zuPCD, setZuPCD] = useState<SemaphoreSignaturePCD | null>(null);
+  const [ethSignature, setEthSignature] = useState<string | null>(null);
+  const [ethPCD, setEthPCD] = useState<EthereumOwnershipPCD | null>(null);
 
   return (
     <div className={styles.container}>
@@ -24,7 +29,10 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
-        <h1>💎 Ethereum PCD</h1>
+        <h1>
+          Ξ<br />
+          Ethereum PCD
+        </h1>
         <ol className={styles.instructionList}>
           <li>
             <h2>Connect your wallet to create an Ethereum PCD.</h2>
@@ -43,10 +51,29 @@ const Home: NextPage = () => {
               </div>
             </li>
           )}
-          {account.status === "connected" && zuPCD && (
+          {account.status === "connected" &&
+            zuPCD?.claim?.identityCommitment && (
+              <li>
+                <h2>Sign your Semaphore commitment.</h2>
+                <div className={styles.instructionBody}>
+                  <SignCommitmentButton
+                    commitment={zuPCD.claim.identityCommitment}
+                    prompt={ethSignature ? "Signed" : "Sign"}
+                    onSigned={setEthSignature}
+                  />
+                </div>
+              </li>
+            )}
+          {account.status === "connected" && zuPCD && ethSignature && (
             <li>
-              <h2>Sign your new Ethereum PCD.</h2>
-              <div className={styles.instructionBody}>TODO</div>
+              <h2>Add Ethereum PCD to your passport.</h2>
+              <div className={styles.instructionBody}>
+                <AddToPassportButton
+                  signature={ethSignature}
+                  prompt={ethPCD ? "Done" : "Prove and add"}
+                  onAdded={setEthPCD}
+                />
+              </div>
             </li>
           )}
         </ol>

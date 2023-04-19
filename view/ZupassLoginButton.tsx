@@ -10,6 +10,7 @@ import {
   SemaphoreSignaturePCD,
   SemaphoreSignaturePCDPackage,
 } from "@pcd/semaphore-signature-pcd";
+import { PCD, SerializedPCD } from "@pcd/pcd-types";
 
 /**
  * Identity-revealing Zuzalu login. Returns a semaphore-signature-pcd.
@@ -28,29 +29,30 @@ export function ZupassLoginButton({
   useEffect(() => {
     if (!loggingIn) return;
     if (!pcdStr) return;
+    const parsed = JSON.parse(pcdStr) as SerializedPCD;
+    if (parsed.type !== SemaphoreSignaturePCDPackage.name) return;
 
     (async function () {
-      const pcd = await SemaphoreSignaturePCDPackage.deserialize(pcdStr);
+      const pcd = await SemaphoreSignaturePCDPackage.deserialize(parsed.pcd);
+      console.log("Got Zuzalu PCD", pcd);
       setLoggingIn(false);
       onLoggedIn(pcd);
     })();
   }, [pcdStr, loggingIn, onLoggedIn]);
 
   return (
-    <>
-      <Button
-        onClick={() => {
-          setLoggingIn(true);
-          openSignedZuzaluUUIDPopup(
-            PASSPORT_URL,
-            window.location.origin + "/popup",
-            "eth-pcd"
-          );
-        }}
-        disabled={loggingIn}
-      >
-        {prompt}
-      </Button>
-    </>
+    <Button
+      onClick={() => {
+        setLoggingIn(true);
+        openSignedZuzaluUUIDPopup(
+          PASSPORT_URL,
+          window.location.origin + "/popup",
+          "eth-pcd"
+        );
+      }}
+      disabled={loggingIn}
+    >
+      {prompt}
+    </Button>
   );
 }

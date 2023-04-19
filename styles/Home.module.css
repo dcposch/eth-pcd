@@ -17,6 +17,10 @@
   align-items: center;
 }
 
+.main h1 {
+  text-align: center;
+}
+
 .footer {
   display: flex;
   flex: 1;
@@ -72,7 +76,7 @@
   border: none;
 }
 .button:hover {
-  background: #f8f8f8;
+  background: #fafafa;
 }
 .button:active {
   background: #f3f3f3;
@@ -85,6 +89,20 @@
 
 .instructionList {
   list-style: none;
+}
+
+.instructionList li {
+  position: relative;
+}
+
+.instructionList li::before {
+  content: counter(list-item)". ";
+  display: block;
+  position: absolute;
+  left: -2rem;
+  top: 0.2rem;
+  font-weight: bold;
+  font-size: 1.2rem;
 }
 
 .instructionBody {

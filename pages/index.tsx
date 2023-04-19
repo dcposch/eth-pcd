@@ -9,6 +9,7 @@ import { ZupassLoginButton } from "../view/ZupassLoginButton";
 import { SignCommitmentButton } from "../view/SignCommitmentButton";
 import { EthereumOwnershipPCD } from "@pcd/ethereum-ownership-pcd";
 import { AddToPassportButton } from "../view/AddToPassportButton";
+import { PASSPORT_URL } from "../src/constants";
 
 const Home: NextPage = () => {
   const account = useAccount();
@@ -34,49 +35,59 @@ const Home: NextPage = () => {
           Ethereum PCD
         </h1>
         <ol className={styles.instructionList}>
-          <li>
-            <h2>Connect your wallet to create an Ethereum PCD.</h2>
-            <div className={styles.instructionBody}>
-              <ConnectButton />
-            </div>
-          </li>
-          {account.status === "connected" && (
-            <li>
-              <h2>Login with your Zuzalu passport.</h2>
-              <div className={styles.instructionBody}>
-                <ZupassLoginButton
-                  prompt={zuPCD ? "Logged in" : "Login with Passport"}
-                  onLoggedIn={setZuPCD}
-                />
-              </div>
-            </li>
-          )}
-          {account.status === "connected" &&
-            zuPCD?.claim?.identityCommitment && (
-              <li>
-                <h2>Sign your Semaphore commitment.</h2>
-                <div className={styles.instructionBody}>
-                  <SignCommitmentButton
-                    commitment={zuPCD.claim.identityCommitment}
-                    prompt={ethSignature ? "Signed" : "Sign"}
-                    onSigned={setEthSignature}
-                  />
-                </div>
-              </li>
+          <Instruction
+            title="Connect your wallet to create an Ethereum PCD."
+            enabled={true}
+          >
+            <ConnectButton />
+          </Instruction>
+          <Instruction
+            title="Login with your Zuzalu passport."
+            enabled={account.status === "connected"}
+          >
+            {!zuPCD && (
+              <ZupassLoginButton
+                prompt={"Login with Passport"}
+                onLoggedIn={setZuPCD}
+              />
             )}
-          {account.status === "connected" && zuPCD && ethSignature && (
-            <li>
-              <h2>Add Ethereum PCD to your passport.</h2>
-              <div className={styles.instructionBody}>
-                <AddToPassportButton
-                  signature={ethSignature}
-                  prompt={ethPCD ? "Done" : "Prove and add"}
-                  onAdded={setEthPCD}
-                />
-              </div>
-            </li>
-          )}
+            {zuPCD && <h3>✅ Zuzalu participant</h3>}
+          </Instruction>
+          <Instruction
+            title="Sign your Semaphore commitment."
+            enabled={account.status === "connected" && zuPCD != null}
+          >
+            {zuPCD && !ethSignature && (
+              <SignCommitmentButton
+                commitment={zuPCD.claim.identityCommitment}
+                prompt={"Sign"}
+                onSigned={setEthSignature}
+              />
+            )}
+            {ethSignature && <h3>✅ Signed</h3>}
+          </Instruction>
+          <Instruction
+            title="Add Ethereum PCD to your passport."
+            enabled={ethSignature != null}
+          >
+            {ethSignature && !ethPCD && (
+              <AddToPassportButton
+                signature={ethSignature}
+                prompt={"Prove and add"}
+                onAdded={setEthPCD}
+              />
+            )}
+            {ethPCD && <h3>✅ Added</h3>}
+          </Instruction>
         </ol>
+        <h2>
+          {!ethPCD && <>&nbsp;</>}
+          {ethPCD && (
+            <a href={PASSPORT_URL} rel="noreferrer" target="_blank">
+              Done
+            </a>
+          )}
+        </h2>
       </main>
 
       <footer className={styles.footer}>
@@ -98,5 +109,26 @@ const Home: NextPage = () => {
     </div>
   );
 };
+
+function Instruction({
+  title,
+  enabled,
+  children,
+}: {
+  title: string;
+  enabled: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <li
+      className={
+        enabled ? styles.instructionEnabled : styles.instructionDisabled
+      }
+    >
+      <h2>{title}</h2>
+      <div className={styles.instructionBody}>{enabled && children}</div>
+    </li>
+  );
+}
 
 export default Home;

@@ -58,7 +58,14 @@ const Home: NextPage = () => {
           rel="noopener noreferrer"
           target="_blank"
         >
-          Made with 0xPARC PCD SDK
+          Built with the 0xPARC PCD SDK
+        </a>
+        <a
+          href="https://github.com/dcposch/eth-pcd"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Github dcposch/eth-pcd
         </a>
       </footer>
     </div>
